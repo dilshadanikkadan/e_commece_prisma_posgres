@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "Node",
+        "baseUrl": "src",
+        "outDir": "dist",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "target": "ES5",
+        "allowSyntheticDefaultImports": true,
+        "rootDir": "src"
+    },
+    "include": ["src/**/*", "node_modules/@types"]
+}
