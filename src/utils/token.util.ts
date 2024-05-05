@@ -2,12 +2,12 @@ import bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import * as jwt from "jsonwebtoken";
 const ACCESS_TOKEN_SECRET =
-  process.env.ACCESS_TOKEN_SECRET || "your-access-token-secret";
+  process.env.ACCESS_TOKEN_SECRET || "access-token-secret";
 const REFRESH_TOKEN_SECRET =
-  process.env.REFRESH_TOKEN_SECRET || "your-refresh-token-secret";
+  process.env.REFRESH_TOKEN_SECRET || "refresh-token-secret";
 
-export const ACCESS_TOKEN_EXPIRATION = "15m"; // 15 minutes
-export const REFRESH_TOKEN_EXPIRATION = "7d"; // 7 days
+export const ACCESS_TOKEN_EXPIRATION = "15m"; 
+export const REFRESH_TOKEN_EXPIRATION = "7d"; 
 
 interface UserData {
   id: number;
@@ -17,10 +17,8 @@ interface UserData {
   refreshToken?:string;
   refreshTokenExpires?:Date;
 }
-// In-memory storage for refresh tokens (ideally use a secure database or cache)
 const refreshTokens: { [key: string]: string } = {};
 
-// Generate a secure random string for token
 export const generateRandomString = (length: number) => {
   return crypto.randomBytes(length).toString("hex");
 };

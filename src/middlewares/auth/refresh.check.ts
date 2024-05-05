@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 const REFRESH_TOKEN_SECRET =
-  process.env.REFRESH_TOKEN_SECRET || "your-refresh-token-secret";
+  process.env.REFRESH_TOKEN_SECRET || "refresh-token-secret";
 const prisma = new PrismaClient();
 async function refreshAccessToken(refreshToken: any) {
   try {
