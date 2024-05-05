@@ -7,7 +7,7 @@ const REFRESH_TOKEN_SECRET =
 const prisma = new PrismaClient();
 async function refreshAccessToken(refreshToken: any) {
   try {
-    // Verify the refresh token
+    // Verify the refresh token is valid
     const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
     const userId = typeof payload === "string" ? null : payload?.id;
 
