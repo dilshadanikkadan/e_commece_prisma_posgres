@@ -6,14 +6,14 @@ const ACCESS_TOKEN_SECRET =
 const REFRESH_TOKEN_SECRET =
   process.env.REFRESH_TOKEN_SECRET || "refresh-token-secret";
 
-export const ACCESS_TOKEN_EXPIRATION = "15m"; 
-export const REFRESH_TOKEN_EXPIRATION = "7d"; 
+export const ACCESS_TOKEN_EXPIRATION = "1m"; 
+export const REFRESH_TOKEN_EXPIRATION = "2m"; 
 
 interface UserData {
   id: number;
-  email: string;
+  email: string; 
   password: string;
-  isAdmin: Boolean;
+  isAdmin: Boolean;  
   refreshToken?:string;
   refreshTokenExpires?:Date;
 }

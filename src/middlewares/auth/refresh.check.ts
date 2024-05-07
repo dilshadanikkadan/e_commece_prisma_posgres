@@ -1,34 +1,23 @@
-import { generateAccessToken } from "utils/token.util";
-import * as jwt from "jsonwebtoken";
+import { generateAccessToken } from "../../utils/token.util";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
-const REFRESH_TOKEN_SECRET =
-  process.env.REFRESH_TOKEN_SECRET || "refresh-token-secret";
+
 const prisma = new PrismaClient();
-async function refreshAccessToken(refreshToken: any) {
+export const refreshAccessToken = async (refreshToken: any) => {
   try {
     // Verify the refresh token is valid
-    const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-    const userId = typeof payload === "string" ? null : payload?.id;
 
-    // Retrieve user data from the database
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findFirst({
+      where: { refreshToken: refreshToken },
+    });
 
     if (!user) {
-      // User not found
       return null;
     }
+console.log(user.refreshTokenExpires);
+console.log(new Date());
 
-    // Check if the refresh token is still valid
-    const isRefreshTokenValid = await bcrypt.compare(
-      refreshToken,
-      user.refreshToken
-    );
-
-    if (
-      !isRefreshTokenValid ||
-      (user.refreshTokenExpires && user.refreshTokenExpires < new Date())
-    ) {
+    if (!(user.refreshTokenExpires && user.refreshTokenExpires > new Date())) {
+      
       // Refresh token is invalid or expired
       return null;
     }
@@ -36,10 +25,10 @@ async function refreshAccessToken(refreshToken: any) {
     // Generate a new access token
     const accessToken = generateAccessToken(user);
 
-    return accessToken;
+    return { accessToken, success: true };
   } catch (error) {
     // Handle token verification and refresh errors
     console.error("Token refresh error:", error);
     return null;
   }
-}
+};

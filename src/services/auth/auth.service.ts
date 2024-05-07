@@ -12,10 +12,19 @@ import {
   generateRefreshToken,
 } from "../../utils/token.util";
 
-class AuthService {
-  async register(userData: RegisterDto, next: NextFunction): Promise<any> {
-    const { email, password, username } = userData;
+declare module "express" {
+  interface Response {
+    cookie(name: string, value: any, options?: any): Response;
+  }
+}
 
+class AuthService {
+  async register(
+    userData: RegisterDto,
+    next: NextFunction,
+  ): Promise<any> {
+    const { email, password, username } = userData;
+ 
     // Check if user already exists
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
@@ -26,29 +35,31 @@ class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create a new user
-    
+
     const user = await userRepository.create({
       email,
       password: hashedPassword,
       username,
-    });
-    
+    }); 
+
     // Generate access and refresh tokens
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken();
     // Hash the refresh token before storing it
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-
-    
     //update in databse the token
     const saveInDb = userRepository.updateToken(user, {
-      refreshToken: hashedRefreshToken,
+      refreshToken: refreshToken,
       REFRESH_TOKEN_EXPIRATION,
     });
+
+    // Set a cookie with the refresh token
+   
     return {
       ...saveInDb,
-      token:accessToken
+      token: accessToken,
+      refreshToken,
     };
   }
 

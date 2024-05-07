@@ -1,5 +1,4 @@
 import { PrismaClient, User } from "@prisma/client";
-import { query } from "express";
 import { createError } from "../handlers/error.handler";
 import { Sign_ } from "../utils/messages/log.message";
 import  ms =require("ms")
@@ -17,7 +16,6 @@ class UserRepository {
   async create(userData: any): Promise<any> {
     try {
       const saved_user = await this.prisma.user.create({ data: userData });
-      // if (!saved_user) return createError(400, Sign_.USER_CREATION_FAILED);
       console.log(saved_user, "saved info");
 
       return saved_user;
@@ -27,9 +25,7 @@ class UserRepository {
   }
 
   async updateToken(user: User, data: any) {
-    console.log(user.username, "username");
-    console.log(data, "data");
-
+ 
     try {
       return this.prisma.user.update({
         where: { id: user.id },

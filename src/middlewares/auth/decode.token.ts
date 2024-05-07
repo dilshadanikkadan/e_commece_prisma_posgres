@@ -1,6 +1,9 @@
 import * as jwt from "jsonwebtoken";
+import { refreshAccessToken } from "./refresh.check";
+
 const ACCESS_TOKEN_SECRET =
   process.env.ACCESS_TOKEN_SECRET || "access-token-secret";
+
 export const verifyAccessToken = async (req: any, res: any, next: any) => {
   const authHeader = req.headers.authorization;
 
@@ -16,18 +19,35 @@ export const verifyAccessToken = async (req: any, res: any, next: any) => {
     return res.status(401).json({ error: "Invalid authorization header" });
   }
 
-  //   const payload = verifyAccessToken(token);
-  const payload = jwt.verify(token, ACCESS_TOKEN_SECRET);
-  //   console.log("payload",payload);
+  try {
+    // Verify the access token
+    const payload = jwt.verify(token, ACCESS_TOKEN_SECRET);
 
-  const userId = typeof payload === "string" ? null : payload?.id;
-  if (!payload) {
-    // Invalid access token
-    return res.status(401).json({ error: "Invalid access token" });
+    // Extract user ID from the payload
+    const userId = typeof payload === "string" ? null : payload?.id;
+
+    // Attach user data to the request object
+    req.user = { userId: userId };
+
+    next();
+  } catch (error) {
+    // Check if the error is TokenExpiredError
+    if (error.name === "TokenExpiredError") {
+      // Access token has expired
+      const refreshToken = req.cookies.refreshToken;
+      if (refreshToken) {
+        const checkValidity = await refreshAccessToken(refreshToken);
+        console.log("cheking", checkValidity);
+
+        if (checkValidity?.success) {
+          // If refresh token is valid, call next() to continue middleware chain
+          return next();
+        }
+      }
+      return res.status(401).json({ error: "Access token has expired" });
+    } else {
+      // Other JWT verification errors
+      return res.status(401).json({ error: "Invalid access token" });
+    }
   }
-
-  // Attach user data to the request object
-  req.user = { userId: userId };
-
-  next();
 };
