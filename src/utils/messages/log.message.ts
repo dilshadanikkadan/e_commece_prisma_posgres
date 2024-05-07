@@ -30,3 +30,14 @@ export const Sign_ = {
   PASSWORDS_NOT_MATCH: "Passwords do not match",
   USER_CREATION_FAILED: "Failed to create user, please try again later",
 };
+
+export const LOGIN_ = {
+  REGISTER_ATTEMPT: "User attempting to register",
+  REGISTER_SUCCESS: "User registered successfully",
+  REGISTER_ERROR: "Error occurred while registering user: ",
+  NO_USER_EXISTS: "Email not existing...",
+  WEAK_PASSWORD: "Password must be at least 8 characters long",
+  PASSWORDS_NOT_MATCH: "Passwords do not match",
+  PASSWORDS_IS_INCOORECT: "Passwords is incorrect",
+  USER_CREATION_FAILED: "Failed to create user, please try again later",
+};

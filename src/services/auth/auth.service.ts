@@ -5,7 +5,7 @@ import { LoginDto, RegisterDto } from "dtos/auth.dtos";
 import { successMessage } from "../../handlers/response.handler";
 import { NextFunction, response } from "express";
 import { createError } from "../../handlers/error.handler";
-import { Sign_ } from "../../utils/messages/log.message";
+import { LOGIN_, Sign_ } from "../../utils/messages/log.message";
 import {
   REFRESH_TOKEN_EXPIRATION,
   generateAccessToken,
@@ -19,12 +19,9 @@ declare module "express" {
 }
 
 class AuthService {
-  async register(
-    userData: RegisterDto,
-    next: NextFunction,
-  ): Promise<any> {
+  async register(userData: RegisterDto, next: NextFunction): Promise<any> {
     const { email, password, username } = userData;
- 
+
     // Check if user already exists
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
@@ -40,7 +37,7 @@ class AuthService {
       email,
       password: hashedPassword,
       username,
-    }); 
+    });
 
     // Generate access and refresh tokens
     const accessToken = generateAccessToken(user);
@@ -54,8 +51,6 @@ class AuthService {
       REFRESH_TOKEN_EXPIRATION,
     });
 
-    // Set a cookie with the refresh token
-   
     return {
       ...saveInDb,
       token: accessToken,
@@ -70,11 +65,21 @@ class AuthService {
     try {
       const user = await userRepository.findByEmail(email);
       if (!user) {
-        return next(createError(400, "user no  exist !!!"));
+        return next(createError(400, LOGIN_.NO_USER_EXISTS));
       }
       const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!isMatch) return next(createError(400, "password is not matching"));
+      if (!isMatch)
+        return next(createError(400, LOGIN_.PASSWORDS_IS_INCOORECT));
+      // Generate access and refresh tokens
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken();
+
+      //update in databse the token
+      const saveInDb = userRepository.updateToken(user, {
+        refreshToken: refreshToken,
+        REFRESH_TOKEN_EXPIRATION,
+      });
       return { success: true, user };
     } catch (error) {}
   }
