@@ -19,7 +19,6 @@ class AuthController {
       const result = await authService.register(userData, next);
       res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
-        // Other cookie options...
       });
       return successMessage(res, 201, result);
     } catch (error) {

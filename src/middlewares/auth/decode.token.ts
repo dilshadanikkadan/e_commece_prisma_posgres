@@ -4,7 +4,7 @@ import { refreshAccessToken } from "./refresh.check";
 const ACCESS_TOKEN_SECRET =
   process.env.ACCESS_TOKEN_SECRET || "access-token-secret";
 
-export const verifyAccessToken = async (req: any, res: any, next: any) => {
+export const verifyAccessToken = async (req: any, res:Response | any, next: any) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -26,7 +26,7 @@ export const verifyAccessToken = async (req: any, res: any, next: any) => {
     // Extract user ID from the payload
     const userId = typeof payload === "string" ? null : payload?.id;
 
-    // Attach user data to the request object
+    // setting user
     req.user = { userId: userId };
 
     next();
@@ -40,13 +40,11 @@ export const verifyAccessToken = async (req: any, res: any, next: any) => {
         console.log("cheking", checkValidity);
 
         if (checkValidity?.success) {
-          // If refresh token is valid, call next() to continue middleware chain
           return next();
         }
       }
       return res.status(401).json({ error: "Access token has expired" });
     } else {
-      // Other JWT verification errors
       return res.status(401).json({ error: "Invalid access token" });
     }
   }
