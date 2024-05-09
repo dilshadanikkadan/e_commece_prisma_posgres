@@ -6,6 +6,7 @@ import { validationResult } from "express-validator";
 import { createError } from "../handlers/error.handler";
 import { validate_err } from "../utils/messages/log.message";
 
+// managing the auth controller
 class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
@@ -19,6 +20,7 @@ class AuthController {
       const result = await authService.register(userData, next);
       res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
+        
       });
       return successMessage(res, 201, result);
     } catch (error) {
