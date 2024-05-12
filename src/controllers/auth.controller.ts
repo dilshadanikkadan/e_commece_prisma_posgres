@@ -6,7 +6,7 @@ import { validationResult } from "express-validator";
 import { createError } from "../handlers/error.handler";
 import { validate_err } from "../utils/messages/log.message";
 
-// managing the auth controller 
+// managing the auth controller //
 class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
